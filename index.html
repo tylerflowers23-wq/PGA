@@ -49,6 +49,11 @@ header{
 @keyframes fadepulse{0%,100%{opacity:1}50%{opacity:.55}}
 .refresh-btn{font-size:8px;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.28);color:var(--sky);border-radius:5px;padding:3px 10px;cursor:pointer;font-family:var(--mono);transition:.15s;letter-spacing:.06em}
 .refresh-btn:hover{background:rgba(56,189,248,.18)}
+.api-key-wrap{display:flex;align-items:center;gap:6px}
+.api-key-input{font-size:8px;font-family:var(--mono);background:rgba(255,255,255,.04);border:1px solid var(--border2);color:var(--text);border-radius:5px;padding:3px 8px;width:180px;letter-spacing:.04em}
+.api-key-input::placeholder{color:var(--sub)}
+.api-key-input:focus{outline:none;border-color:var(--sky);background:rgba(56,189,248,.06)}
+.api-key-label{font-size:7px;color:var(--sub);letter-spacing:.08em}
 
 /* Live + EV chips */
 .chips{display:flex;gap:5px;flex-wrap:wrap;align-items:center}
@@ -234,6 +239,10 @@ footer{text-align:center;font-size:7px;color:#0a1520;padding:20px;letter-spacing
         <span class="upd-time" id="updTime"></span>
         <span class="live-count" id="liveCount" style="display:none"></span>
         <button class="refresh-btn" onclick="fetchScores()">↻ Refresh</button>
+        <div class="api-key-wrap">
+          <span class="api-key-label">API KEY</span>
+          <input type="password" id="apiKeyInput" class="api-key-input" placeholder="sk-ant-…" />
+        </div>
       </div>
     </div>
     <div class="chips" id="chipsArea"></div>
@@ -468,10 +477,23 @@ function seedLiveMap() {
 // then return clean JSON. This works reliably every time.
 
 async function fetchScores() {
+  const apiKey = document.getElementById("apiKeyInput").value.trim();
+  if (!apiKey) {
+    setStatus("error");
+    return;
+  }
+  // Persist key in localStorage for convenience
+  localStorage.setItem("pga_api_key", apiKey);
+  setStatus("loading");
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
       body: JSON.stringify({
         model: "claude-sonnet-4-20250514",
         max_tokens: 4000,
@@ -851,7 +873,13 @@ seedLiveMap();           // populate from seed data immediately
 lastUpd = new Date();
 setStatus("seeded");
 renderAll();             // render with seed data right away
-fetchScores();           // attempt live fetch in background
+
+// Restore saved API key and auto-fetch if available
+const savedKey = localStorage.getItem("pga_api_key");
+if (savedKey) {
+  document.getElementById("apiKeyInput").value = savedKey;
+  fetchScores();           // attempt live fetch in background
+}
 setInterval(fetchScores, 90000); // refresh every 90s via Claude API
 </script>
 </body>
