@@ -256,8 +256,8 @@ footer{text-align:center;font-size:7px;color:#0a1520;padding:20px;letter-spacing
     <div class="sort-wrap">
       <span style="font-size:7px;color:var(--sub);letter-spacing:.08em">SORT</span>
       <select id="sortSel" onchange="renderGrid()">
-        <option value="ev">EV Score</option>
         <option value="pos">Position</option>
+        <option value="ev">EV Score</option>
         <option value="today">Score Today</option>
         <option value="fit">Course Fit</option>
         <option value="form">Form</option>
@@ -600,7 +600,7 @@ function allPlayers() {
 
 function filtered() {
   const q  = (document.getElementById("qInput")?.value||"").toLowerCase();
-  const s  = document.getElementById("sortSel")?.value || "ev";
+  const s  = document.getElementById("sortSel")?.value || "pos";
   const fns = {
     "All":            ()=>true,
     "Best EV":        p=>p.tier==="elite"||p.tier==="high",
@@ -806,7 +806,7 @@ function renderFilters() {
 function setFilter(f) { activeFlt=f; renderFilters(); renderGrid(); }
 
 function renderChips(players) {
-  const live   = players.filter(p=>p.today!=null&&p.teeTime==null).sort((a,b)=>(a.today??99)-(b.today??99)).slice(0,3);
+  const live   = players.filter(p=>p.score!=null&&p.position!=="MC").sort((a,b)=>(a.score??99)-(b.score??99)).slice(0,3);
   const topEV  = [...players].sort((a,b)=>b.ev-a.ev).slice(0,3);
   const nLive  = players.filter(p=>p.thru!=null&&p.thru!=="F"&&p.teeTime==null).length;
   const lc     = document.getElementById("liveCount");
@@ -816,10 +816,10 @@ function renderChips(players) {
   live.forEach(p=>{
     const db=DB[p.name]; if(!db) return;
     html+=`<div class="chip" style="background:rgba(251,191,36,.07);border-color:rgba(251,191,36,.3)" onclick="openModal('${p.name.replace(/'/g,"\\'")}')">
-      <div class="chip-tag" style="color:#fbbf24">🔴 LIVE</div>
+      <div class="chip-tag" style="color:#fbbf24">🏆 LEADER</div>
       <div class="chip-name">${p.name.split(" ").pop()}</div>
-      <div class="chip-score" style="color:${sc(p.today)}">${sl(p.today)}</div>
-      <div class="chip-sub">Thru ${p.thru}</div></div>`;
+      <div class="chip-score" style="color:${sc(p.score)}">${sl(p.score)}</div>
+      <div class="chip-sub">${p.position||"—"}</div></div>`;
   });
   topEV.forEach(p=>{
     const tc=TIER_C[p.tier];
