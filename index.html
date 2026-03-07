@@ -231,7 +231,7 @@ footer{text-align:center;font-size:7px;color:#0a1520;padding:20px;letter-spacing
 <div class="hdr-inner">
   <div class="hdr-row1">
     <div class="title-block">
-      <div class="event-tag">⛳ PGA Tour Signature · Bay Hill · Mar 5–8 2026 · Round 1 In Progress</div>
+      <div class="event-tag">⛳ PGA Tour Signature · Bay Hill · Mar 5–8 2026 · Round 3 In Progress</div>
       <div class="event-name">Arnold Palmer Invitational</div>
       <div class="status-row">
         <div class="pulse-dot" id="dot" style="background:#f59e0b;box-shadow:0 0 8px #f59e0b"></div>
@@ -282,7 +282,7 @@ footer{text-align:center;font-size:7px;color:#0a1520;padding:20px;letter-spacing
   <div class="empty" id="emptyMsg" style="display:none">NO PLAYERS MATCH YOUR FILTERS</div>
 </main>
 
-<footer>FOR ENTERTAINMENT ONLY · GAMBLE RESPONSIBLY · LIVE DATA: ESPN API · PRE-TOURNAMENT ANALYTICS: ESPN / GOLF DIGEST / DRAFTKINGS / GNN · MARCH 5 2026</footer>
+<footer>FOR ENTERTAINMENT ONLY · GAMBLE RESPONSIBLY · LIVE DATA: ESPN API · PRE-TOURNAMENT ANALYTICS: ESPN / GOLF DIGEST / DRAFTKINGS / GNN · MARCH 5–8 2026</footer>
 
 <!-- Modal -->
 <div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
@@ -375,85 +375,85 @@ const TIER_CLS= {elite:"t-elite bg-elite", high:"t-high bg-high", medium:"t-med 
 const TIER_LBL= {elite:"ELITE EV", high:"HIGH EV", medium:"MED EV", low:"LOW EV"};
 const FILTERS = ["All","Best EV","Course Fit","Value Picks","Fade","Sleepers","🔴 Playing Now"];
 
-// ════════════════ SEEDED LIVE DATA (R1 snapshot — auto-refreshed in background) ════════════════
-// Seeded directly from ESPN leaderboard at page load time so scores show instantly.
-// fetchScores() runs every 60s and overwrites this with fresher data when CORS allows.
-// tee = tee time string for players not yet started; thru = hole completed or "F"
+// ════════════════ SEEDED LIVE DATA (After R2 — auto-refreshed via Claude API) ════════════════
+// Seeded from ESPN leaderboard after Round 2 completion so scores show instantly.
+// fetchScores() runs every 90s and overwrites this with live R3 data.
+// tee = Round 3 tee time; thru = "F" means rounds complete; score = total to par after R2
 const SEED = [
-  // In progress / finished
-  {n:"Scottie Scheffler",    pos:"T8",  today:-1, score:-1, thru:"3"},
-  {n:"Rory McIlroy",         pos:"-",   today:null,score:null,thru:null, tee:"1:30 PM"},
-  {n:"Tommy Fleetwood",      pos:"-",   today:null,score:null,thru:null, tee:"12:50 PM"},
-  {n:"Matt Fitzpatrick",     pos:"-",   today:null,score:null,thru:null, tee:"12:05 PM"},
-  {n:"Xander Schauffele",    pos:"T14", today:0,  score:0,  thru:"3"},
-  {n:"Collin Morikawa",      pos:"T8",  today:-1, score:-1, thru:"4"},
-  {n:"Nicolai Hojgaard",     pos:"T14", today:0,  score:0,  thru:"1"},
-  {n:"Pierceson Coody",      pos:"-",   today:null,score:null,thru:null, tee:"11:45 AM"},
-  {n:"Corey Conners",        pos:"T14", today:0,  score:0,  thru:"8"},
-  {n:"Jake Knapp",           pos:"-",   today:null,score:null,thru:null, tee:"12:05 PM"},
-  {n:"Jacob Bridgeman",      pos:"-",   today:null,score:null,thru:null, tee:"1:10 PM"},
-  {n:"Ryo Hisatsune",        pos:"-",   today:null,score:null,thru:null, tee:"11:10 AM"},
-  {n:"Ludvig Åberg",         pos:"-",   today:null,score:null,thru:null, tee:"1:00 PM"},
-  {n:"Viktor Hovland",       pos:"-",   today:null,score:null,thru:null, tee:"1:30 PM"},
-  {n:"Russell Henley",       pos:"T25", today:1,  score:1,  thru:"3"},
-  {n:"Shane Lowry",          pos:"T8",  today:-1, score:-1, thru:"4"},
-  {n:"Jordan Spieth",        pos:"-",   today:null,score:null,thru:null, tee:"11:55 AM"},
-  {n:"Chris Gotterup",       pos:"-",   today:null,score:null,thru:null, tee:"1:10 PM"},
-  {n:"Justin Rose",          pos:"T25", today:1,  score:1,  thru:"4"},
-  {n:"Adam Scott",           pos:"T14", today:0,  score:0,  thru:"2"},
-  {n:"Sepp Straka",          pos:"T4",  today:-2, score:-2, thru:"8"},
-  {n:"Hideki Matsuyama",     pos:"-",   today:null,score:null,thru:null, tee:"1:20 PM"},
-  {n:"Cameron Young",        pos:"T8",  today:-1, score:-1, thru:"8"},
-  {n:"Patrick Cantlay",      pos:"T25", today:1,  score:1,  thru:"7"},
-  {n:"Robert MacIntyre",     pos:"T14", today:0,  score:0,  thru:"6"},
-  {n:"Harris English",       pos:"T8",  today:-1, score:-1, thru:"7"},
-  {n:"Justin Thomas",        pos:"-",   today:null,score:null,thru:null, tee:"1:20 PM"},
-  {n:"Rickie Fowler",        pos:"-",   today:null,score:null,thru:null, tee:"1:40 PM"},
-  {n:"Kurt Kitayama",        pos:"-",   today:null,score:null,thru:null, tee:"11:45 AM"},
-  {n:"Si Woo Kim",           pos:"-",   today:null,score:null,thru:null, tee:"11:00 AM"},
-  {n:"Denny McCarthy",       pos:"-",   today:null,score:null,thru:null, tee:"11:35 AM"},
-  {n:"Brian Harman",         pos:"T14", today:0,  score:0,  thru:"5"},
-  {n:"Billy Horschel",       pos:"T4",  today:-2, score:-2, thru:"14"},
-  {n:"Aldrich Potgieter",    pos:"T25", today:1,  score:1,  thru:"2"},
-  // 38 additional players
-  {n:"Jhonattan Vegas",      pos:"1",   today:-5, score:-5, thru:"14"},
-  {n:"Daniel Berger",        pos:"2",   today:-4, score:-4, thru:"10"},
-  {n:"Min Woo Lee",          pos:"3",   today:-3, score:-3, thru:"9"},
-  {n:"Ryan Fox",             pos:"T4",  today:-2, score:-2, thru:"14"},
-  {n:"Michael Thorbjornsen", pos:"T4",  today:-2, score:-2, thru:"9"},
-  {n:"Brian Campbell",       pos:"T8",  today:-1, score:-1, thru:"12"},
-  {n:"Daniel Bennett",       pos:"T14", today:0,  score:0,  thru:"15"},
-  {n:"Max Greyserman",       pos:"T14", today:0,  score:0,  thru:"11"},
-  {n:"Andrew Putnam",        pos:"T14", today:0,  score:0,  thru:"10"},
-  {n:"Keith Mitchell",       pos:"T14", today:0,  score:0,  thru:"1"},
-  {n:"Austin Smotherman",    pos:"T14", today:0,  score:0,  thru:"1"},
-  {n:"Tom Hoge",             pos:"T25", today:1,  score:1,  thru:"14"},
-  {n:"Patrick Rodgers",      pos:"T25", today:1,  score:1,  thru:"12"},
-  {n:"Taylor Moore",         pos:"T25", today:1,  score:1,  thru:"10"},
-  {n:"Alex Noren",           pos:"T25", today:1,  score:1,  thru:"10"},
-  {n:"Harry Hall",           pos:"T25", today:1,  score:1,  thru:"8"},
-  {n:"J.T. Poston",          pos:"T25", today:1,  score:1,  thru:"1"},
-  {n:"Matt McCarty",         pos:"T35", today:2,  score:2,  thru:"11"},
-  {n:"Akshay Bhatia",        pos:"T35", today:2,  score:2,  thru:"5"},
-  {n:"Andrew Novak",         pos:"37",  today:3,  score:3,  thru:"6"},
-  {n:"Joel Dahmen",          pos:"38",  today:4,  score:4,  thru:"15"},
-  {n:"Bud Cauley",           pos:"-",   today:null,score:null,thru:null, tee:"11:00 AM"},
-  {n:"Lucas Glover",         pos:"-",   today:null,score:null,thru:null, tee:"11:10 AM"},
-  {n:"Jason Day",            pos:"-",   today:null,score:null,thru:null, tee:"11:20 AM"},
-  {n:"Ryan Gerard",          pos:"-",   today:null,score:null,thru:null, tee:"11:20 AM"},
-  {n:"Taylor Pendrith",      pos:"-",   today:null,score:null,thru:null, tee:"11:35 AM"},
-  {n:"Sam Stevens",          pos:"-",   today:null,score:null,thru:null, tee:"11:55 AM"},
-  {n:"Sam Burns",            pos:"-",   today:null,score:null,thru:null, tee:"12:15 PM"},
-  {n:"Sungjae Im",           pos:"-",   today:null,score:null,thru:null, tee:"12:15 PM"},
-  {n:"Nick Taylor",          pos:"-",   today:null,score:null,thru:null, tee:"12:25 PM"},
-  {n:"J.J. Spaun",           pos:"-",   today:null,score:null,thru:null, tee:"12:25 PM"},
-  {n:"Keegan Bradley",       pos:"-",   today:null,score:null,thru:null, tee:"12:35 PM"},
-  {n:"Maverick McNealy",     pos:"-",   today:null,score:null,thru:null, tee:"12:35 PM"},
-  {n:"Ben Griffin",          pos:"-",   today:null,score:null,thru:null, tee:"12:50 PM"},
-  {n:"Nico Echavarria",      pos:"-",   today:null,score:null,thru:null, tee:"1:00 PM"},
-  {n:"Michael Kim",          pos:"-",   today:null,score:null,thru:null, tee:"1:40 PM"},
-  {n:"Chris Kirk",           pos:"-",   today:null,score:null,thru:null, tee:"1:50 PM"},
-  {n:"Sahith Theegala",      pos:"-",   today:null,score:null,thru:null, tee:"1:50 PM"},
+  // === Leaders & contenders (made cut — top 50 + ties) ===
+  {n:"Daniel Berger",        pos:"1",   today:-4, score:-13, thru:"F"},
+  {n:"Akshay Bhatia",        pos:"2",   today:-6, score:-8,  thru:"F"},
+  {n:"Collin Morikawa",      pos:"T3",  today:-1, score:-7,  thru:"F"},
+  {n:"Ludvig Åberg",         pos:"T3",  today:-1, score:-7,  thru:"F"},
+  {n:"Sahith Theegala",      pos:"T3",  today:-5, score:-7,  thru:"F"},
+  {n:"Rickie Fowler",        pos:"6",   today:-3, score:-6,  thru:"F"},
+  {n:"Russell Henley",       pos:"T7",  today:-3, score:-5,  thru:"F"},
+  {n:"Xander Schauffele",    pos:"T7",  today:-1, score:-5,  thru:"F"},
+  {n:"Rory McIlroy",         pos:"T9",  today:-4, score:-4,  thru:"F"},
+  {n:"Cameron Young",        pos:"T9",  today:1,  score:-4,  thru:"F"},
+  {n:"Adam Scott",           pos:"T9",  today:0,  score:-4,  thru:"F"},
+  {n:"Chris Gotterup",       pos:"T9",  today:-1, score:-4,  thru:"F"},
+  {n:"Harris English",       pos:"T9",  today:-1, score:-4,  thru:"F"},
+  {n:"Billy Horschel",       pos:"T9",  today:-1, score:-4,  thru:"F"},
+  {n:"Scottie Scheffler",    pos:"T15", today:-1, score:-3,  thru:"F"},
+  {n:"Hideki Matsuyama",     pos:"T15", today:-1, score:-3,  thru:"F"},
+  {n:"Kurt Kitayama",        pos:"T15", today:0,  score:-3,  thru:"F"},
+  {n:"Min Woo Lee",          pos:"T15", today:0,  score:-3,  thru:"F"},
+  {n:"Corey Conners",        pos:"T15", today:0,  score:-3,  thru:"F"},
+  {n:"Jhonattan Vegas",      pos:"T15", today:2,  score:-3,  thru:"F"},
+  {n:"Sepp Straka",          pos:"T21", today:0,  score:-2,  thru:"F"},
+  {n:"Nicolai Hojgaard",     pos:"T21", today:0,  score:-2,  thru:"F"},
+  {n:"Jake Knapp",           pos:"T21", today:-1, score:-2,  thru:"F"},
+  {n:"Ryan Fox",             pos:"T21", today:2,  score:-2,  thru:"F"},
+  {n:"Michael Thorbjornsen", pos:"T21", today:0,  score:-2,  thru:"F"},
+  {n:"Tommy Fleetwood",      pos:"T26", today:1,  score:-1,  thru:"F"},
+  {n:"Viktor Hovland",       pos:"T26", today:0,  score:-1,  thru:"F"},
+  {n:"Robert MacIntyre",     pos:"T26", today:-1, score:-1,  thru:"F"},
+  {n:"Si Woo Kim",           pos:"T26", today:0,  score:-1,  thru:"F"},
+  {n:"Keegan Bradley",       pos:"T26", today:0,  score:-1,  thru:"F"},
+  {n:"Maverick McNealy",     pos:"T26", today:0,  score:-1,  thru:"F"},
+  {n:"Matt Fitzpatrick",     pos:"T32", today:1,  score:0,   thru:"F"},
+  {n:"Jordan Spieth",        pos:"T32", today:1,  score:0,   thru:"F"},
+  {n:"Patrick Cantlay",      pos:"T32", today:0,  score:0,   thru:"F"},
+  {n:"Ryo Hisatsune",        pos:"T32", today:1,  score:0,   thru:"F"},
+  {n:"Jacob Bridgeman",      pos:"T32", today:1,  score:0,   thru:"F"},
+  {n:"Bud Cauley",           pos:"T32", today:1,  score:0,   thru:"F"},
+  {n:"Lucas Glover",         pos:"T32", today:0,  score:0,   thru:"F"},
+  {n:"Jason Day",            pos:"T32", today:1,  score:0,   thru:"F"},
+  {n:"Sam Burns",            pos:"T32", today:1,  score:0,   thru:"F"},
+  {n:"Brian Harman",         pos:"T41", today:1,  score:1,   thru:"F"},
+  {n:"Max Greyserman",       pos:"T41", today:1,  score:1,   thru:"F"},
+  {n:"Tom Hoge",             pos:"T41", today:0,  score:1,   thru:"F"},
+  {n:"Alex Noren",           pos:"T41", today:0,  score:1,   thru:"F"},
+  {n:"J.T. Poston",          pos:"T41", today:0,  score:1,   thru:"F"},
+  {n:"Nico Echavarria",      pos:"T41", today:1,  score:1,   thru:"F"},
+  {n:"Nick Taylor",          pos:"T41", today:1,  score:1,   thru:"F"},
+  {n:"Sungjae Im",           pos:"T41", today:1,  score:1,   thru:"F"},
+  {n:"Denny McCarthy",       pos:"T49", today:1,  score:2,   thru:"F"},
+  {n:"Keith Mitchell",       pos:"T49", today:2,  score:2,   thru:"F"},
+  // === Missed Cut ===
+  {n:"Shane Lowry",          pos:"MC",  today:1,  score:3,   thru:"F"},
+  {n:"Andrew Putnam",        pos:"MC",  today:2,  score:3,   thru:"F"},
+  {n:"Taylor Moore",         pos:"MC",  today:2,  score:3,   thru:"F"},
+  {n:"Harry Hall",           pos:"MC",  today:2,  score:3,   thru:"F"},
+  {n:"Patrick Rodgers",      pos:"MC",  today:2,  score:3,   thru:"F"},
+  {n:"Ben Griffin",          pos:"MC",  today:2,  score:3,   thru:"F"},
+  {n:"Matt McCarty",         pos:"MC",  today:2,  score:4,   thru:"F"},
+  {n:"Chris Kirk",           pos:"MC",  today:3,  score:4,   thru:"F"},
+  {n:"Andrew Novak",         pos:"MC",  today:3,  score:4,   thru:"F"},
+  {n:"J.J. Spaun",           pos:"MC",  today:3,  score:4,   thru:"F"},
+  {n:"Joel Dahmen",          pos:"MC",  today:2,  score:5,   thru:"F"},
+  {n:"Ryan Gerard",          pos:"MC",  today:3,  score:5,   thru:"F"},
+  {n:"Sam Stevens",          pos:"MC",  today:3,  score:5,   thru:"F"},
+  {n:"Taylor Pendrith",      pos:"MC",  today:4,  score:5,   thru:"F"},
+  {n:"Brian Campbell",       pos:"MC",  today:4,  score:5,   thru:"F"},
+  {n:"Michael Kim",          pos:"MC",  today:4,  score:6,   thru:"F"},
+  {n:"Justin Rose",          pos:"MC",  today:8,  score:6,   thru:"F"},
+  {n:"Austin Smotherman",    pos:"MC",  today:4,  score:6,   thru:"F"},
+  {n:"Daniel Bennett",       pos:"MC",  today:5,  score:7,   thru:"F"},
+  {n:"Pierceson Coody",      pos:"MC",  today:2,  score:9,   thru:"F"},
+  {n:"Aldrich Potgieter",    pos:"MC",  today:2,  score:9,   thru:"F"},
+  {n:"Justin Thomas",        pos:"MC",  today:7,  score:14,  thru:"F"},
 ];
 let liveMap = {};
 let lastUpd = null;
@@ -576,7 +576,7 @@ function setStatus(state) {
     upd.textContent = "Live data · " + lastUpd.toLocaleTimeString();
   } else if (state === "seeded") {
     dot.style.background = "#10b981"; dot.style.boxShadow = "0 0 8px #10b981";
-    stxt.style.color = "#10b981"; stxt.textContent = "R1 IN PROGRESS · LIVE SCORES";
+    stxt.style.color = "#10b981"; stxt.textContent = "R3 IN PROGRESS · LIVE SCORES";
     upd.textContent = "Data as of " + lastUpd.toLocaleTimeString() + " · Auto-refreshing";
   } else {
     dot.style.background = "#ef4444"; dot.style.boxShadow = "0 0 8px #ef4444";
