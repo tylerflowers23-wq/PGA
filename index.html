@@ -563,6 +563,15 @@ players_2026: {
 
 }; // end TOURNAMENTS
 
+// ═══════════════════════ CONSTANTS & STATE ════════════════════════════════
+const TIER_C   = {elite:"#10b981", high:"#818cf8", medium:"#f59e0b", low:"#ef4444"};
+const TIER_CLS = {elite:"t-elite bg-elite", high:"t-high bg-high", medium:"t-med bg-med", low:"t-low bg-low"};
+const TIER_LBL = {elite:"ELITE EV", high:"HIGH EV", medium:"MED EV", low:"LOW EV"};
+const FILTERS  = ["All","Best EV","Course Fit","Value Picks","Fade","Sleepers","🔴 Playing Now"];
+let liveMap    = {};
+let lastUpd    = null;
+let activeFlt  = "All";
+
 // ═══════════════════════ ACTIVE TOURNAMENT ════════════════════════════════
 let activeTournament = "players_2026";
 function getTournament() { return TOURNAMENTS[activeTournament]; }
